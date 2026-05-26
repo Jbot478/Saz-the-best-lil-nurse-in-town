@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Nurse Saz 👩‍⚕️ — Ward 7</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="game">
+
+    <!-- ═══════════════════════════════════
+         SCENE: Hospital Room
+    ════════════════════════════════════ -->
+    <div id="scene-room" class="scene active">
+      <div class="room-header">
+        <span class="nurse-sprite" aria-label="Nurse Saz">👩‍⚕️</span>
+        <div class="room-header-text">
+          <h1>Ward 7</h1>
+          <p>Nurse Saz is on duty</p>
+        </div>
+        <div class="progress-badge" id="progress-badge">0/6</div>
+      </div>
+
+      <div class="room-grid" id="room-grid">
+        <!-- Patient beds are injected by main.js -->
+      </div>
+
+      <div class="room-footer">
+        <span id="progress-text">Tap a patient to help them!</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCENE: Dialogue overlay
+    ════════════════════════════════════ -->
+    <div id="scene-dialogue" class="scene overlay hidden" role="dialog" aria-modal="true">
+      <div class="overlay-backdrop"></div>
+      <div class="dialogue-panel">
+        <div class="dialogue-header">
+          <span id="dialogue-sprite" class="dialogue-sprite" aria-hidden="true"></span>
+          <span id="dialogue-speaker" class="dialogue-speaker"></span>
+        </div>
+        <p id="dialogue-text" class="dialogue-text"></p>
+        <button id="btn-dialogue-next" class="btn-primary btn-full">
+          Continue <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCENE: Mini-game overlay
+    ════════════════════════════════════ -->
+    <div id="scene-minigame" class="scene overlay hidden" role="dialog" aria-modal="true">
+      <div class="overlay-backdrop"></div>
+      <div class="minigame-panel">
+        <div class="minigame-header">
+          <h2 id="minigame-title" class="minigame-title"></h2>
+          <p id="minigame-description" class="minigame-desc"></p>
+        </div>
+        <div id="minigame-content" class="minigame-content"></div>
+        <p id="minigame-status" class="minigame-status" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCENE: Closing / Birthday
+    ════════════════════════════════════ -->
+    <div id="scene-closing" class="scene hidden">
+      <div class="closing-confetti" id="closing-confetti" aria-hidden="true"></div>
+      <div class="closing-panel">
+        <div class="closing-emojis" aria-hidden="true">🎉🎂🎈🎁🌟🎊</div>
+        <h1 class="closing-title">🎉 Happy Birthday! 🎉</h1>
+        <p class="closing-patients">"Thanks Nurse Saz!"</p>
+        <p class="closing-quote">
+          "You healed confusion, chaos,<br />and extremely dramatic adults."
+        </p>
+        <div class="closing-buttons">
+          <button id="btn-play-again" class="btn-primary btn-full">▶️ Play Again</button>
+          <button id="btn-send-cake" class="btn-secondary btn-full">🎂 Send Cake</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast hidden" role="alert" aria-live="assertive"></div>
+
+  </div><!-- #game -->
+
+  <script src="js/state.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/dialogue.js"></script>
+  <script src="js/minigames.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
