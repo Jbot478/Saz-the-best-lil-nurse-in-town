@@ -1,0 +1,667 @@
+/* ═══════════════════════════════════════════════════════
+   NURSE SAZ — Style Sheet
+   Palette: soft mint / white / teal accent
+═══════════════════════════════════════════════════════ */
+
+:root {
+  --bg:           #eef7f4;
+  --bg-room:      #daeee9;
+  --panel:        #ffffff;
+  --accent:       #6dc8bc;
+  --accent-dark:  #4aa89c;
+  --accent-light: #b4e5e0;
+  --text:         #2d3748;
+  --text-muted:   #718096;
+  --border:       #cce5e0;
+  --success:      #48bb78;
+  --success-bg:   #f0fff4;
+  --error:        #fc8181;
+  --error-bg:     #fff5f5;
+  --warn:         #f6ad55;
+  --shadow-sm:    0 2px 8px rgba(0,0,0,.07);
+  --shadow-md:    0 4px 20px rgba(0,0,0,.10);
+  --shadow-lg:    0 8px 40px rgba(0,0,0,.18);
+  --radius:       18px;
+  --radius-sm:    10px;
+  --font:         'Segoe UI', system-ui, -apple-system, sans-serif;
+  --transition:   .3s ease;
+}
+
+/* ── Reset ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Game container ──────────────────────────────────── */
+#game {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCENE SYSTEM
+═══════════════════════════════════════════════════════ */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  transition: opacity var(--transition), transform var(--transition);
+}
+.scene.hidden   { opacity: 0; pointer-events: none; transform: translateY(16px); }
+.scene.active   { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+/* Overlay scenes sit on top with semi-transparent backdrop */
+.scene.overlay  {
+  justify-content: flex-end;
+  padding: 12px;
+  z-index: 10;
+}
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30,50,45,.45);
+  backdrop-filter: blur(3px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ROOM SCENE
+═══════════════════════════════════════════════════════ */
+#scene-room {
+  background: linear-gradient(170deg, var(--bg-room) 0%, #c9e8e2 100%);
+  padding: 14px;
+  gap: 12px;
+}
+
+/* Header */
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+.nurse-sprite {
+  font-size: 2.2rem;
+  animation: nurseBob 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes nurseBob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+.room-header-text { flex: 1; }
+.room-header-text h1 {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.room-header-text p {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+.progress-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 50px;
+  flex-shrink: 0;
+}
+
+/* Beds grid */
+.room-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(90px, 150px));
+  gap: 10px;
+  align-content: center;
+  align-self: center;
+  width: 100%;
+  max-height: 360px;
+}
+
+.patient-bed {
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  position: relative;
+  transition: transform .15s ease, border-color .3s ease, background .3s ease;
+  user-select: none;
+  min-height: 90px;
+}
+.patient-bed:active { transform: scale(.94); }
+.patient-bed.helped {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+.patient-bed .helped-badge {
+  position: absolute;
+  top: 6px; right: 8px;
+  font-size: .85rem;
+}
+.patient-sprite-big { font-size: 2rem; line-height: 1; }
+.patient-bed-name {
+  font-size: .6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+.patient-bed-number {
+  position: absolute;
+  top: 6px; left: 8px;
+  font-size: .62rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Footer */
+.room-footer {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  margin-top: auto;
+}
+#progress-text {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+/* ═══════════════════════════════════════════════════════
+   DIALOGUE PANEL
+═══════════════════════════════════════════════════════ */
+.dialogue-panel {
+  position: relative;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1;
+}
+.dialogue-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.dialogue-sprite { font-size: 2.6rem; }
+.dialogue-speaker {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+.dialogue-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  min-height: 52px;
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MINI-GAME PANEL
+═══════════════════════════════════════════════════════ */
+#scene-minigame {
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+}
+.minigame-panel {
+  position: relative;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-height: 88dvh;
+  overflow-y: auto;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.minigame-header { text-align: center; }
+.minigame-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.minigame-desc {
+  font-size: .82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.minigame-content { flex: 1; }
+.minigame-status {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  text-align: center;
+  min-height: 22px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CLOSING SCENE
+═══════════════════════════════════════════════════════ */
+#scene-closing {
+  background: linear-gradient(170deg, #fff9f0 0%, #fde8f0 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 0;
+  z-index: 20;
+}
+.closing-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  font-size: 1.6rem;
+  animation: confettiFloat linear infinite;
+  opacity: .85;
+}
+@keyframes confettiFloat {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: .9; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+.closing-panel {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 1;
+}
+.closing-emojis {
+  font-size: 2rem;
+  letter-spacing: 4px;
+  animation: emojiPop .6s ease;
+}
+@keyframes emojiPop {
+  0%   { transform: scale(.5); opacity: 0; }
+  80%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.closing-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.closing-patients {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+.closing-quote {
+  font-size: .88rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.6;
+}
+.closing-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
+.btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 50px;
+  font-size: .95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: transform .15s ease, opacity .15s ease;
+  min-height: 52px;
+  user-select: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(109,200,188,.4);
+}
+.btn-primary:hover  { background: var(--accent-dark); }
+.btn-primary:active { transform: scale(.96); }
+.btn-secondary {
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+.btn-secondary:hover  { background: var(--bg); }
+.btn-secondary:active { transform: scale(.96); }
+.btn-full { width: 100%; }
+.btn-arrow { opacity: .7; }
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+.toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: var(--text);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: .9rem;
+  font-weight: 600;
+  z-index: 99;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  transition: opacity .3s ease, transform .3s ease;
+}
+.toast.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px); }
+
+/* ═══════════════════════════════════════════════════════
+   MINI-GAME SPECIFICS
+═══════════════════════════════════════════════════════ */
+
+/* ── Shared instruction ──────────────────────────────── */
+.game-instruction {
+  font-size: .82rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* ── Patient 1: Categories Solitaire ─────────────────── */
+.cat-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+  min-height: 50px;
+}
+.cat-item {
+  font-size: 1.8rem;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, background .15s;
+  min-width: 52px; min-height: 52px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cat-item:active { transform: scale(.92); }
+.cat-item.selected { border-color: var(--accent); background: var(--accent-light); transform: scale(1.08); }
+.cat-item.placed   { visibility: hidden; pointer-events: none; }
+.cat-item.correct  { border-color: var(--success); background: var(--success-bg); }
+.cat-item.wrong    { border-color: var(--error); background: var(--error-bg); animation: shake .35s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(-6px); }
+  75%     { transform: translateX(6px); }
+}
+.cat-buckets {
+  display: flex;
+  gap: 8px;
+}
+.cat-bucket {
+  flex: 1;
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  min-height: 80px;
+}
+.cat-bucket:hover      { border-color: var(--accent); background: var(--accent-light); }
+.cat-bucket-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.cat-bucket-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+}
+.cat-bucket-items .cat-item {
+  font-size: 1.3rem;
+  min-width: 36px; min-height: 36px;
+  padding: 4px;
+  visibility: visible;
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+/* ── Patient 2: Match Grid ───────────────────────────── */
+.match-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.match-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  transition: background .3s;
+}
+.match-row.row-fixed { background: var(--success-bg); }
+.match-cell {
+  font-size: 1.8rem;
+  min-width: 68px; min-height: 68px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: transform .12s, border-color .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.match-cell:active { transform: scale(.9); }
+.match-row.row-fixed .match-cell {
+  border-color: var(--success);
+  background: var(--success-bg);
+  pointer-events: none;
+}
+
+/* ── Patient 3: Quiz ─────────────────────────────────── */
+.quiz-question {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quiz-option {
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  text-align: left;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: var(--font);
+  color: var(--text);
+}
+.quiz-option:not(:disabled):hover { background: var(--accent-light); border-color: var(--accent); }
+.quiz-option:disabled { cursor: default; }
+.quiz-option.correct  { background: var(--success-bg); border-color: var(--success); color: #276749; }
+.quiz-option.wrong    { background: var(--error-bg);   border-color: var(--error);   color: #9b2c2c; }
+.quiz-feedback {
+  margin-top: 10px;
+  text-align: center;
+  font-size: .88rem;
+  font-weight: 700;
+  min-height: 22px;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+.quiz-feedback.success { background: var(--success-bg); color: #276749; }
+.quiz-feedback.fail    { background: var(--error-bg);   color: #9b2c2c; }
+
+/* ── Patient 4: Heartbeat Timing ─────────────────────── */
+.hb-track-wrap {
+  position: relative;
+  height: 60px;
+  border-radius: 30px;
+  background: #f7f7f7;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  margin: 12px 0;
+  cursor: pointer;
+}
+.hb-zone {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: rgba(72,187,120,.22);
+  border-left: 2px solid var(--success);
+  border-right: 2px solid var(--success);
+}
+.hb-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.7rem;
+  pointer-events: none;
+  transition: left .02s linear;
+}
+.hb-taps {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.hb-tap-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .25s, transform .2s;
+}
+.hb-tap-dot.hit   { background: var(--success); transform: scale(1.2); }
+.hb-tap-dot.miss  { background: var(--error);   animation: shake .3s ease; }
+.hb-feedback {
+  text-align: center;
+  font-size: 1.1rem;
+  min-height: 30px;
+  margin-top: 6px;
+}
+
+/* ── Patient 5: Memory Match ─────────────────────────── */
+.mem-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mem-card {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  border: 2px solid var(--accent-dark);
+  font-size: 1.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .25s ease;
+  transform-style: preserve-3d;
+  position: relative;
+  user-select: none;
+}
+.mem-card.flipped  { transform: rotateY(180deg); background: var(--bg); border-color: var(--border); }
+.mem-card.matched  { transform: rotateY(180deg); background: var(--success-bg); border-color: var(--success); cursor: default; }
+.mem-card .card-front,
+.mem-card .card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+}
+.mem-card .card-front { transform: rotateY(180deg); }
+.mem-card .card-back  { font-size: 1.3rem; }
+
+/* ── Patient 6: Slide Puzzle ─────────────────────────── */
+.slide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+.slide-tile {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .18s ease, background .2s;
+  user-select: none;
+  background: var(--accent-light);
+  border: 2px solid var(--accent);
+  color: var(--accent-dark);
+  gap: 2px;
+}
+.slide-tile:active  { transform: scale(.92); }
+.slide-tile.blank   { background: transparent; border: 2px dashed var(--border); cursor: default; pointer-events: none; }
+.slide-tile.correct { background: var(--success-bg); border-color: var(--success); color: #276749; }
+.slide-tile-num     { font-size: 1rem; font-weight: 800; }
+.slide-tile-emoji   { font-size: 1.2rem; }
+.slide-moves        { text-align: center; font-size: .82rem; color: var(--text-muted); margin-top: 8px; }
